@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar & Reminder</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/calendar.css">
+</head>
+<body>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <button id="prevYear" class="btn btn-outline-secondary">&laquo; Prev Year</button>
+        <h2 id="currentYear" class="mb-0"></h2>
+        <button id="nextYear" class="btn btn-outline-secondary">Next Year &raquo;</button>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <button id="prevMonth" class="btn btn-outline-primary">&laquo; Prev Month</button>
+        <h4 id="currentMonth" class="mb-0"></h4>
+        <button id="nextMonth" class="btn btn-outline-primary">Next Month &raquo;</button>
+    </div>
+    <div id="calendar" class="calendar-table mb-4"></div>
+    <div id="dayView" class="d-none">
+        <h5 id="selectedDate"></h5>
+        <button id="remindMeBtn" class="btn btn-success">Remind Me</button>
+    </div>
+</div>
+<!-- Reminder Modal -->
+<div class="modal fade" id="reminderModal" tabindex="-1" aria-labelledby="reminderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reminderModalLabel">Set Reminder</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs mb-3" id="reminderTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="date-tab" data-bs-toggle="tab" data-bs-target="#dateReminder" type="button" role="tab">Date Reminder</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="time-tab" data-bs-toggle="tab" data-bs-target="#timeReminder" type="button" role="tab">Same-Day Time Reminder</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="reminderTabContent">
+          <!-- Date Reminder Tab -->
+          <div class="tab-pane fade show active" id="dateReminder" role="tabpanel">
+            <form id="dateReminderForm">
+              <div class="mb-3">
+                <label for="dateTitle" class="form-label">Reminder Title</label>
+                <input type="text" class="form-control" id="dateTitle" required>
+              </div>
+              <div class="mb-3">
+                <label for="dateDate" class="form-label">Date</label>
+                <input type="date" class="form-control" id="dateDate" required>
+              </div>
+              <div class="mb-3">
+                <label for="dateTime" class="form-label">Time (24-hour, optional)</label>
+                <input type="time" class="form-control" id="dateTime">
+              </div>
+              <div class="mb-3">
+                <label for="dateEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="dateEmail" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Set Date Reminder</button>
+            </form>
+          </div>
+          <!-- Same-Day Time Reminder Tab -->
+          <div class="tab-pane fade" id="timeReminder" role="tabpanel">
+            <form id="timeReminderForm">
+              <div class="mb-3">
+                <label for="timeTitle" class="form-label">Reminder Title</label>
+                <input type="text" class="form-control" id="timeTitle" required>
+              </div>
+              <div class="mb-3">
+                <label for="timeTime" class="form-label">Time (24-hour)</label>
+                <input type="time" class="form-control" id="timeTime" required>
+              </div>
+              <div class="mb-3">
+                <label for="timeEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="timeEmail" required>
+              </div>
+              <button type="submit" class="btn btn-success w-100">Set Time Reminder</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/calendar.js"></script>
+<script src="/static/notifications/notify.js"></script>
+</body>
+</html>
