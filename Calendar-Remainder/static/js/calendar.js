@@ -38,6 +38,30 @@ function showDayView(date) {
     document.getElementById('selectedDate').textContent = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
     document.getElementById('dayView').classList.remove('d-none');
 }
+function editReminder(id) {
+    // Fetch reminder details and populate the edit form
+    fetch(`/get_reminder/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const reminder = data.reminder;
+                document.getElementById('dateTitle').value = reminder.title;
+                document.getElementById('dateDate').value = reminder.reminder_date;
+                document.getElementById('dateTime').value = reminder.reminder_time || '';
+                document.getElementById('dateEmail').value = reminder.email;
+                window.currentEditingReminderId = reminder.id;
+                const editModal = new bootstrap.Modal(
+                    document.getElementById('dateReminderModal')
+                );
+                editModal.show();
+            } else {
+                alert('Error fetching reminder details: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error fetching reminder details: ' + error.message);
+        });
+}
 
 document.getElementById('prevYear').onclick = () => { currentYear--; renderCalendar(currentYear, currentMonth); };
 document.getElementById('nextYear').onclick = () => { currentYear++; renderCalendar(currentYear, currentMonth); };
@@ -121,7 +145,63 @@ if (dateReminderForm) {
             reminder_time: document.getElementById('dateTime').value || null,
             email: document.getElementById('dateEmail').value
         };
-        
+        try {
+
+    if (window.currentEditingReminderId) {
+
+        const response = await fetch(
+            `/edit_reminder/${window.currentEditingReminderId}`,
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Reminder Modified Successfully!');
+            window.currentEditingReminderId = null;
+            dateReminderForm.reset();
+
+            bootstrap.Modal.getInstance(
+                document.getElementById('reminderModal')
+            ).hide();
+
+            location.reload();
+
+        } else {
+            alert('Error: ' + result.error);
+        }
+
+        return;
+    }
+
+    // EXISTING ADD REMINDER CODE BELOW
+    const response = await fetch('/add_reminder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+        alert('Reminder set successfully!');
+        dateReminderForm.reset();
+
+        bootstrap.Modal.getInstance(
+            document.getElementById('reminderModal')
+        ).hide();
+
+    } else {
+        alert('Error: ' + result.error);
+    }
+
+} catch (error) {
+    alert('Error setting reminder: ' + error.message);
+}
         try {
             const response = await fetch('/add_reminder', {
                 method: 'POST',

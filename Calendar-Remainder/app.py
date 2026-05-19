@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from apscheduler.schedulers.background import BackgroundScheduler
 from dotenv import load_dotenv
 from datetime import datetime, date
+import pytz
 
 # Load environment variables from .env
 load_dotenv()
@@ -124,15 +125,18 @@ def reminder_history():
 def check_and_trigger_reminders():
     with app.app_context():
         try:
-            now = datetime.now()
+            print("[SCHEDULER RUNNING]", datetime.now())
+            ist = pytz.timezone('Asia/Kolkata')
+            now = datetime.now(ist)
             today = date.today()
             reminders = Reminder.query.filter_by(reminder_date=today, notification_status='pending').all()
             for reminder in reminders:
+                print(f"Checking reminder: {reminder.title} | "f"Reminder Time: {reminder.reminder_time} | "f"Current Time: {now.strftime('%H:%M')}")
                 # Check if reminder_time is set and matches current time (24-hour format)
                 if reminder.reminder_time:
                     reminder_time_str = reminder.reminder_time.strftime('%H:%M')
                     now_time_str = now.strftime('%H:%M')
-                    if reminder_time_str == now_time_str:
+                    if (    reminder.reminder_time.hour == now.hour and reminder.reminder_time.minute == now.minute):
                         send_email_notification(reminder)
                         trigger_browser_notification(reminder)
                         reminder.notification_status = 'sent'
@@ -171,7 +175,7 @@ def trigger_browser_notification(reminder):
     print(f"[BROWSER] Reminder: {reminder.title} at {reminder.reminder_time}")
 
 # Schedule the job to run every minute
-scheduler.add_job(func=check_and_trigger_reminders, trigger='interval', seconds=60, id='reminder_job', replace_existing=True)
+scheduler.add_job(func=check_and_trigger_reminders, trigger='interval', seconds=10, id='reminder_job', replace_existing=True)
 
 if __name__ == '__main__':
     # Initialize the database
@@ -182,4 +186,4 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"[DATABASE ERROR] {e}")
     
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=True, use_reloader=False, host='127.0.0.1', port=5000)

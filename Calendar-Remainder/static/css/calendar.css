@@ -19,3 +19,11 @@ body { background: #f4f6fa; }
 #remindMeBtn { margin: 0; }
 #currentYear, #currentMonth { color: #333; font-weight: 600; }
 #reminderHistoryBtn { font-weight: 600; }
+.edit-btn {
+    background: #2563eb;
+    color: white;
+}
+.delete-btn {
+    background: #dc2626;
+    color: white;
+}
