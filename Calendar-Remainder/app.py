@@ -9,11 +9,17 @@ from datetime import datetime, date
 # Load environment variables from .env
 load_dotenv()
 
-app = Flask(__name__)
+# Create instance folder
+instance_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
+if not os.path.exists(instance_path):
+    os.makedirs(instance_path, mode=0o777)
 
-# Configurations
+app = Flask(__name__, instance_path=instance_path)
+
+# Database configuration - use instance folder
+db_path = os.path.join(instance_path, 'reminders.db')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/reminders.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Flask-Mail config
@@ -54,20 +60,31 @@ def home():
 # Add reminder route (POST)
 @app.route('/add_reminder', methods=['POST'])
 def add_reminder():
+    from datetime import time
     data = request.get_json() if request.is_json else request.form
     title = data.get('title')
     reminder_type = data.get('reminder_type')
-    reminder_date = data.get('reminder_date')
-    reminder_time = data.get('reminder_time')
+    reminder_date_str = data.get('reminder_date')
+    reminder_time_str = data.get('reminder_time')
     email = data.get('email')
-    if not (title and reminder_type and email):
+    
+    if not (title and reminder_type and email and reminder_date_str):
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+    
     try:
+        # Convert date string to date object
+        reminder_date_obj = datetime.strptime(reminder_date_str, '%Y-%m-%d').date()
+        
+        # Convert time string to time object if provided
+        reminder_time_obj = None
+        if reminder_time_str:
+            reminder_time_obj = datetime.strptime(reminder_time_str, '%H:%M').time()
+        
         reminder = Reminder(
             title=title,
             reminder_type=reminder_type,
-            reminder_date=reminder_date,
-            reminder_time=reminder_time,
+            reminder_date=reminder_date_obj,
+            reminder_time=reminder_time_obj,
             email=email,
             notification_status='pending'
         )
@@ -77,71 +94,78 @@ def add_reminder():
         return jsonify({'success': True, 'reminder_id': reminder.id})
     except Exception as e:
         db.session.rollback()
+        print(f"[ERROR] add_reminder - {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # Reminder history route
 @app.route('/reminder_history', methods=['GET'])
 def reminder_history():
-    reminders = Reminder.query.order_by(Reminder.created_at.desc()).all()
-    result = [
-        {
-            'id': r.id,
-            'title': r.title,
-            'reminder_type': r.reminder_type,
-            'reminder_date': str(r.reminder_date),
-            'reminder_time': r.reminder_time.strftime('%H:%M') if r.reminder_time else None,
-            'email': r.email,
-            'notification_status': r.notification_status,
-            'created_at': r.created_at.isoformat()
-        }
-        for r in reminders
-    ]
-    return jsonify(result)
+    try:
+        reminders = Reminder.query.order_by(Reminder.created_at.desc()).all()
+        result = [
+            {
+                'id': r.id,
+                'title': r.title,
+                'reminder_type': r.reminder_type,
+                'reminder_date': str(r.reminder_date),
+                'reminder_time': r.reminder_time.strftime('%H:%M') if r.reminder_time else None,
+                'email': r.email,
+                'notification_status': r.notification_status,
+                'created_at': r.created_at.isoformat()
+            }
+            for r in reminders
+        ]
+        return jsonify(result)
+    except Exception as e:
+        print(f"[ERROR] reminder_history - {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # --- APScheduler Job for Reminders ---
 def check_and_trigger_reminders():
-    now = datetime.now()
-    today = date.today()
-    reminders = Reminder.query.filter_by(reminder_date=today, notification_status='pending').all()
-    for reminder in reminders:
-        # Check if reminder_time is set and matches current time (24-hour format)
-        if reminder.reminder_time:
-            reminder_time_str = reminder.reminder_time.strftime('%H:%M')
-            now_time_str = now.strftime('%H:%M')
-            if reminder_time_str == now_time_str:
-                send_email_notification(reminder)
-                trigger_browser_notification(reminder)
-                reminder.notification_status = 'sent'
-                db.session.commit()
-        else:
-            # If no time, use default (00:01 for email, 12:00 for browser)
-            if now.strftime('%H:%M') == '00:01':
-                send_email_notification(reminder)
-                reminder.notification_status = 'sent'
-                db.session.commit()
-            elif now.strftime('%H:%M') == '12:00':
-                trigger_browser_notification(reminder)
-                # Don't mark as sent if email not sent yet
+    with app.app_context():
+        try:
+            now = datetime.now()
+            today = date.today()
+            reminders = Reminder.query.filter_by(reminder_date=today, notification_status='pending').all()
+            for reminder in reminders:
+                # Check if reminder_time is set and matches current time (24-hour format)
+                if reminder.reminder_time:
+                    reminder_time_str = reminder.reminder_time.strftime('%H:%M')
+                    now_time_str = now.strftime('%H:%M')
+                    if reminder_time_str == now_time_str:
+                        send_email_notification(reminder)
+                        trigger_browser_notification(reminder)
+                        reminder.notification_status = 'sent'
+                        db.session.commit()
+                else:
+                    # If no time, use default (00:01 for email, 12:00 for browser)
+                    if now.strftime('%H:%M') == '00:01':
+                        send_email_notification(reminder)
+                        reminder.notification_status = 'sent'
+                        db.session.commit()
+                    elif now.strftime('%H:%M') == '12:00':
+                        trigger_browser_notification(reminder)
+                        # Don't mark as sent if email not sent yet
+        except Exception as e:
+            print(f"[SCHEDULER ERROR] {str(e)}")
 
-# Dummy email notification function
-
+# Email notification function
 def send_email_notification(reminder):
-    subject = "Reminder Notification"
-    reminder_time = reminder.reminder_time.strftime('%H:%M') if reminder.reminder_time else 'N/A'
-    body = f"""
+    try:
+        subject = "Reminder Notification"
+        reminder_time = reminder.reminder_time.strftime('%H:%M') if reminder.reminder_time else 'N/A'
+        body = f"""
     Reminder: {reminder.title}
     Scheduled Date: {reminder.reminder_date}
     Scheduled Time: {reminder_time}
     """
-    msg = Message(subject=subject, recipients=[reminder.email], body=body)
-    try:
+        msg = Message(subject=subject, recipients=[reminder.email], body=body)
         mail.send(msg)
         print(f"[EMAIL SENT] To: {reminder.email} | Title: {reminder.title} | Date: {reminder.reminder_date} | Time: {reminder_time}")
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
 
-# Dummy browser notification event trigger
-
+# Browser notification function
 def trigger_browser_notification(reminder):
     # In production, use WebSocket or server-sent events to notify browser
     print(f"[BROWSER] Reminder: {reminder.title} at {reminder.reminder_time}")
@@ -150,4 +174,12 @@ def trigger_browser_notification(reminder):
 scheduler.add_job(func=check_and_trigger_reminders, trigger='interval', seconds=60, id='reminder_job', replace_existing=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Initialize the database
+    with app.app_context():
+        try:
+            db.create_all()
+            print(f"[DATABASE] Initialized at: {db_path}")
+        except Exception as e:
+            print(f"[DATABASE ERROR] {e}")
+    
+    app.run(debug=True, host='127.0.0.1', port=5000)

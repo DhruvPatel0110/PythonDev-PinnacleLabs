@@ -4,6 +4,11 @@ let currentYear = today.getFullYear();
 let currentMonth = today.getMonth();
 let selectedDay = null;
 
+function updateYearMonthDisplay() {
+    document.getElementById('currentYear').textContent = currentYear;
+    document.getElementById('currentMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+}
+
 function renderCalendar(year, month) {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
@@ -20,6 +25,7 @@ function renderCalendar(year, month) {
     }
     html += '</tr></tbody></table>';
     document.getElementById('calendar').innerHTML = html;
+    updateYearMonthDisplay();
     document.querySelectorAll('#calendar td[data-date]').forEach(td => {
         td.onclick = function() {
             selectedDay = new Date(this.dataset.date);
@@ -59,6 +65,113 @@ if (remindMeBtn) {
             }
         }
         modal.show();
+    };
+}
+
+// Reminder History functionality
+const reminderHistoryBtn = document.getElementById('reminderHistoryBtn');
+if (reminderHistoryBtn) {
+    reminderHistoryBtn.onclick = () => {
+        const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+        loadReminderHistory();
+        modal.show();
+    };
+}
+
+// Load reminder history from backend
+function loadReminderHistory() {
+    fetch('/reminder_history')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('historyTableBody');
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No reminders yet</td></tr>';
+                return;
+            }
+            
+            data.forEach(reminder => {
+                const row = `<tr>
+                    <td>${reminder.title}</td>
+                    <td><span class="badge bg-primary">${reminder.reminder_type}</span></td>
+                    <td>${reminder.reminder_date}</td>
+                    <td>${reminder.reminder_time || 'N/A'}</td>
+                    <td>${reminder.email}</td>
+                    <td><span class="badge ${reminder.notification_status === 'sent' ? 'bg-success' : 'bg-warning'}">${reminder.notification_status}</span></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        })
+        .catch(error => {
+            console.error('Error loading reminder history:', error);
+            document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>';
+        });
+}
+
+// Handle Date Reminder Form Submission
+const dateReminderForm = document.getElementById('dateReminderForm');
+if (dateReminderForm) {
+    dateReminderForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            title: document.getElementById('dateTitle').value,
+            reminder_type: 'date',
+            reminder_date: document.getElementById('dateDate').value,
+            reminder_time: document.getElementById('dateTime').value || null,
+            email: document.getElementById('dateEmail').value
+        };
+        
+        try {
+            const response = await fetch('/add_reminder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Reminder set successfully!');
+                dateReminderForm.reset();
+                bootstrap.Modal.getInstance(document.getElementById('reminderModal')).hide();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error setting reminder: ' + error.message);
+        }
+    };
+}
+
+// Handle Time Reminder Form Submission
+const timeReminderForm = document.getElementById('timeReminderForm');
+if (timeReminderForm) {
+    timeReminderForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            title: document.getElementById('timeTitle').value,
+            reminder_type: 'time',
+            reminder_date: new Date().toISOString().split('T')[0], // Today's date
+            reminder_time: document.getElementById('timeTime').value,
+            email: document.getElementById('timeEmail').value
+        };
+        
+        try {
+            const response = await fetch('/add_reminder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Time reminder set successfully!');
+                timeReminderForm.reset();
+                bootstrap.Modal.getInstance(document.getElementById('reminderModal')).hide();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error setting reminder: ' + error.message);
+        }
     };
 }
 

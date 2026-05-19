@@ -1,4 +1,12 @@
 body { background: #f4f6fa; }
+.main-heading { 
+    color: #007bff; 
+    font-size: 2.5rem; 
+    font-weight: 700; 
+    margin-bottom: 1.5rem; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+}
 .calendar-table { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; }
 .calendar-table table { width: 100%; text-align: center; }
 .calendar-table th, .calendar-table td { padding: 0.7rem; }
@@ -6,5 +14,8 @@ body { background: #f4f6fa; }
 .calendar-table td { cursor: pointer; border-radius: 4px; transition: background 0.2s; }
 .calendar-table td:hover { background: #e3f2fd; }
 .calendar-table .today { background: #007bff; color: #fff; border-radius: 4px; }
-#dayView { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1rem; margin-top: 1rem; }
-#remindMeBtn { float: right; }
+#dayView { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.5rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
+#dayView h5 { margin: 0; }
+#remindMeBtn { margin: 0; }
+#currentYear, #currentMonth { color: #333; font-weight: 600; }
+#reminderHistoryBtn { font-weight: 600; }
