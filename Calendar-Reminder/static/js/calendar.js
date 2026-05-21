@@ -51,7 +51,7 @@ function editReminder(id) {
                 document.getElementById('dateEmail').value = reminder.email;
                 window.currentEditingReminderId = reminder.id;
                 const editModal = new bootstrap.Modal(
-                    document.getElementById('dateReminderModal')
+                    document.getElementById('reminderModal')
                 );
                 editModal.show();
             } else {
@@ -123,7 +123,11 @@ function loadReminderHistory() {
                     <td>${reminder.reminder_time || 'N/A'}</td>
                     <td>${reminder.email}</td>
                     <td><span class="badge ${reminder.notification_status === 'sent' ? 'bg-success' : 'bg-warning'}">${reminder.notification_status}</span></td>
-                </tr>`;
+                    <td>
+                        <button class="edit-btn" onclick="editReminder(${reminder.id})">✏️</button>
+                        <button class="delete-btn" onclick="deleteReminder(${reminder.id}, '${reminder.title}', '${reminder.reminder_time}')">🗑️</button>
+                    </td>
+                    </tr>`;
                 tableBody.innerHTML += row;
             });
         })
@@ -257,3 +261,36 @@ if (timeReminderForm) {
 
 // Initial render
 renderCalendar(currentYear, currentMonth);
+function deleteReminder(id, title, time) {
+
+    const confirmDelete = confirm(
+        `Are you sure you want to delete "${title}" at ${time}?`
+    );
+
+    if (!confirmDelete) return;
+
+    fetch(`/delete_reminder/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.success) {
+
+            alert('Reminder deleted successfully!');
+            location.reload();
+
+        } else {
+
+            alert('Error deleting reminder: ' + data.error);
+
+        }
+
+    })
+    .catch(error => {
+
+        alert('Error deleting reminder: ' + error.message);
+
+    });
+
+}

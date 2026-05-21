@@ -98,6 +98,98 @@ def add_reminder():
         print(f"[ERROR] add_reminder - {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/get_reminder/<int:id>')
+def get_reminder(id):
+
+    try:
+
+        reminder = Reminder.query.get(id)
+
+        if not reminder:
+            return jsonify({
+                'success': False,
+                'error': 'Reminder not found'
+            })
+
+        return jsonify({
+            'success': True,
+            'reminder': {
+                'id': reminder.id,
+                'title': reminder.title,
+                'reminder_date': str(reminder.reminder_date),
+                'reminder_time': str(reminder.reminder_time),
+                'email': reminder.email
+            }
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/delete_reminder/<int:id>', methods=['DELETE'])
+def delete_reminder(id):
+
+    try:
+
+        reminder = Reminder.query.get(id)
+
+        if not reminder:
+            return jsonify({
+                'success': False,
+                'error': 'Reminder not found'
+            })
+
+        db.session.delete(reminder)
+        db.session.commit()
+
+        return jsonify({
+            'success': True
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/edit_reminder/<int:id>', methods=['PUT'])
+def edit_reminder(id):
+
+    try:
+
+        reminder = Reminder.query.get(id)
+
+        if not reminder:
+            return jsonify({
+                'success': False,
+                'error': 'Reminder not found'
+            })
+
+        data = request.get_json()
+
+        reminder.title = data.get('title')
+        reminder.reminder_date = data.get('reminder_date')
+        reminder.reminder_time = data.get('reminder_time')
+        reminder.email = data.get('email')
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Reminder updated successfully'
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
 # Reminder history route
 @app.route('/reminder_history', methods=['GET'])
 def reminder_history():
