@@ -1,503 +1,247 @@
 # Weather Forecast Dashboard
-## Smart Dynamic Weather Monitoring System
 
----
+A Flask-based weather dashboard that shows live weather data, forecast charts, dynamic weather themes, and weather-related news.
 
-# Project Overview
+## Current Working Features
 
-This project is a modern Python-based Weather Forecast Dashboard that provides:
+- Manual city search from the home page
+- Browser geolocation using `navigator.geolocation.getCurrentPosition()`
+- Live current weather from OpenWeatherMap
+- Weather lookup by city name
+- Weather lookup by latitude and longitude
+- Dashboard page that loads automatically after a successful search
+- Responsive Bootstrap 5 UI
+- Glassmorphism dashboard styling
+- Dynamic weather-based themes
+- Subtle weather animations
+- Hourly forecast cards and charts
+- Rain and precipitation forecast view
+- Weather alerts derived from forecast data
+- Weather news from NewsAPI
+- Loading states and error messages
 
-- Real-time weather monitoring
-- Dynamic weather-based UI themes
-- Hourly temperature tracking
-- Weather condition analytics
-- Rain/precipitation forecasting
-- Severe weather alerts & news
+## Dashboard Cards
 
-The application automatically changes its visual theme depending on the current weather conditions of the user's location.
+The dashboard currently includes four interactive cards.
 
-The dashboard focuses heavily on:
-- UI/UX
-- Live API integration
-- Real-world weather visualization
-- Interactive cards and analytics
+### Current Temperature
 
----
+Displays:
 
-# Core Features
-
-## 1. Location Detection System
-
-When the user opens the website/app, the first screen shows a location input box.
-
-Users can choose either:
-
-### Manual Location Input
-- Enter city name manually
-- Example:
-  - Hyderabad
-  - Mumbai
-  - Delhi
-
----
-
-### Automatic Location Detection
-
-Using browser popup permission:
-
-```javascript
-navigator.geolocation.getCurrentPosition()
-```
-
-The browser requests:
-> "Allow this website to access your location?"
-
-If accepted:
-- Latitude & Longitude are fetched automatically
-- Weather data loads instantly
-
----
-
-# Dynamic Weather Themes
-
-The dashboard theme changes immediately after weather detection.
-
----
-
-# Theme System
-
-## 1. Thunderstorm / Heavy Clouds Theme
-
-### Colors
-- Black
-- Dark Gray
-- Electric Blue
-
-### Trigger Conditions
-- Thunderstorm
-- Heavy Rain
-- Extreme Cloudiness
-
----
-
-## 2. Sunny Theme
-
-### Colors
-- Light Blue
-- Yellow
-- Orange
-
-### Trigger Conditions
-- Clear Sky
-- Sunny Weather
-- High UV Index
-
----
-
-## 3. Semi-Cloudy Theme
-
-### Colors
-- Light Gray
-- Soft Blue
-- White
-
-### Trigger Conditions
-- Partly Cloudy
-- Mist
-- Haze
-
----
-
-## 4. Snow Theme
-
-### Colors
-- White
-- Ice Blue
-- Silver
-
-### Trigger Conditions
-- Snowfall
-- Blizzard
-- Low Temperature
-
----
-
-## 5. Rain Theme
-
-### Colors
-- Navy Blue
-- Dark Cyan
-- Gray
-
-### Trigger Conditions
-- Rain
-- Drizzle
-- Wet Conditions
-
----
-
-# Recommended Tech Stack
-
-## Frontend
-- HTML5
-- CSS3
-- Bootstrap 5
-- JavaScript
-
----
-
-## Backend
-- Python
-- Flask Framework
-
----
-
-## APIs Required
-
-## 1. Weather API
-
-### Recommended
-- OpenWeatherMap API
-
-Used For:
-- Current Weather
-- Hourly Forecast
-- Rain Probability
-- Temperature Data
-
----
-
-## 2. News API
-
-### Recommended
-- NewsAPI.org
-
-Used For:
-- Cyclone Alerts
-- Storm Warnings
-- Weather News
-- Natural Disaster Reports
-
----
-
-# Required Python Libraries
-
-## Flask Libraries
-
-```bash
-pip install flask
-pip install requests
-pip install python-dotenv
-```
-
----
-
-# Main Dashboard Layout
-
-The dashboard contains multiple interactive cards.
-
----
-
-# Dashboard Cards
-
----
-
-# 1. Current Temperature Card
-
-## Displays
 - Current temperature
-- Feels like temperature
-- Max/Min temperature
+- Feels-like temperature
+- Maximum temperature
+- Minimum temperature
 
-Example:
-```plaintext
-28°C
-Feels like 31°C
-```
+On click:
 
----
+- Opens a larger modal with a Chart.js temperature line graph
+- Shows temperature and feels-like trends from forecast data
 
-## On Click Action
+### Current Weather
 
-When clicked:
-- Opens hourly temperature graph
-- Shows temperature for every hour of the day
+Displays:
 
-Example:
-```plaintext
-9 AM  -> 26°C
-10 AM -> 27°C
-11 AM -> 29°C
-```
+- Weather condition
+- Weather description
+- Weather icon
+- Humidity
+- Wind speed
 
----
+On click:
 
-## Suggested Visualization
-- Line Graph
-- Temperature Chart
+- Opens a weather condition timeline
+- Shows upcoming forecast conditions
 
----
+### Rain / Precipitation
 
-# 2. Current Weather Card
+Displays:
 
-## Displays
-- Current weather condition
+- Rain chance
+- Precipitation chance
+- Thunderstorm probability
 
-Examples:
+On click:
+
+- Opens rainfall and precipitation charts
+- Shows expected rainfall and storm probability
+
+### Weather News
+
+Displays:
+
+- Weather-related news count
+- Main alert or headline
+- Severity label
+
+On click:
+
+- Opens a news and alerts modal
+- Shows title, description, source, date, and severity
+
+## Dynamic Themes
+
+The dashboard changes theme automatically after weather data loads.
+
+Currently supported themes:
+
 - Sunny
-- Cloudy
-- Rainy
+- Semi-cloudy / haze / mist
+- Rain
 - Thunderstorm
 - Snow
 
----
+Theme changes include:
 
-## On Click Action
+- Background gradients
+- Accent colors
+- Button colors
+- Card highlight colors
+- Weather animations
 
-Displays weather conditions throughout the day.
+## Weather Animations
 
-Example:
-```plaintext
-10 AM -> Sunny
-1 PM  -> Partly Cloudy
-5 PM  -> Rain Expected
+Current animations include:
+
+- Sun glow for sunny weather
+- Moving clouds for cloudy weather
+- Rain streaks for rainy weather
+- Lightning flash for thunderstorm weather
+- Snowfall for snow weather
+
+## APIs Used
+
+### OpenWeatherMap
+
+Used for:
+
+- Current weather
+- Temperature
+- Feels-like temperature
+- Humidity
+- Pressure
+- Wind speed
+- Weather condition
+- Weather icon
+- Forecast data
+- Rain and precipitation probability
+
+### NewsAPI
+
+Used for:
+
+- Weather news
+- Severe weather headlines
+- Storm, rain, flood, and cyclone-related articles
+
+## Flask Routes
+
+### Page Routes
+
+```text
+/                  Home page
+/dashboard          Weather dashboard
+/weather-news       Redirects to dashboard
 ```
 
----
+### API Routes
 
-# 3. Rain / Precipitation Card
-
-## Displays
-Prediction chances for:
-- Rain
-- Precipitation
-- Hailstorm
-
----
-
-## Example
-
-```plaintext
-Rain Chance: 72%
-Hail Chance: 15%
-Thunderstorm Probability: 40%
-```
-
----
-
-## On Click Action
-
-Displays:
-- Hourly rain prediction
-- Storm probability graph
-- Expected rainfall amount
-
----
-
-# 4. Weather News Card
-
-## Purpose
-
-Displays major weather-related alerts/news that may affect the user's area.
-
----
-
-## Examples
-
-```plaintext
-Cyclone expected near coastal region next week
-Heavy thunderstorm warning issued for tomorrow
-Extreme rainfall expected in nearby district
-```
-
----
-
-## Data Source
-Uses:
-- NewsAPI
-- Weather alerts API
-
----
-
-## On Click Action
-
-Shows:
-- Full weather news
-- Severity level
-- Date/time of event
-- Safety instructions
-
----
-
-# Additional Features
-
----
-
-# Weather Animations
-
-## Dynamic Animations Based On Weather
-
-### Sunny
-- Moving sun rays
-- Floating clouds
-
-### Rain
-- Rain animation
-- Water drop effects
-
-### Snow
-- Snowflake animation
-
-### Thunderstorm
-- Lightning flashes
-- Dark cloud effects
-
----
-
-# Real-Time Refresh
-
-The dashboard refreshes weather automatically:
-- Every 15 minutes
-- Or manual refresh button
-
----
-
-# Search History
-
-Store previously searched locations:
-- Hyderabad
-- Delhi
-- Bengaluru
-
----
-
-# Temperature Unit Toggle
-
-Users can switch between:
-- Celsius
-- Fahrenheit
-
----
-
-# Suggested Folder Structure
-
-```plaintext
-weather-dashboard/
-│
-├── app.py
-├── static/
-│   ├── css/
-│   ├── js/
-│   ├── animations/
-│   └── images/
-│
-├── templates/
-├── api/
-├── utils/
-└── .env
-```
-
----
-
-# Recommended Website Pages
-
-## Pages
-
-- Home Page
-- Weather Dashboard
-- Detailed Forecast Page
-- Weather News Page
-- Settings Page
-
----
-
-# Database (Optional)
-
-SQLite can store:
-- Search history
-- Favorite locations
-- User settings
-- Theme preferences
-
----
-
-# Suggested APIs Endpoints
-
-## Current Weather
-```plaintext
+```text
 /api/weather/current
-```
-
----
-
-## Hourly Forecast
-```plaintext
+/api/weather/location
 /api/weather/hourly
-```
-
----
-
-## Weather Alerts
-```plaintext
 /api/weather/alerts
-```
-
----
-
-## Weather News
-```plaintext
 /api/weather/news
 ```
 
----
+## Project Structure
 
-# Security Features
+```text
+Weather/
+|-- app.py
+|-- requirements.txt
+|-- SetupInstructions.md
+|-- README.md
+|-- .env
+|-- templates/
+|   |-- index.html
+|   |-- dashboard.html
+|   `-- weather_news.html
+|-- static/
+|   |-- css/
+|   |   |-- style.css
+|   |   |-- themes.css
+|   |   |-- dashboard.css
+|   |   `-- animations.css
+|   |-- js/
+|   |   |-- main.js
+|   |   |-- weather.js
+|   |   |-- charts.js
+|   |   `-- themes.js
+|   |-- images/
+|   `-- animations/
+|-- api/
+|   |-- weather_api.py
+|   `-- news_api.py
+|-- utils/
+`-- database/
+    `-- search_history.db
+```
 
-- API key protection using `.env`
-- Rate limiting
-- Input validation
+## Tech Stack
 
----
+- Python
+- Flask
+- HTML5
+- CSS3
+- Bootstrap 5
+- Vanilla JavaScript
+- Chart.js
+- OpenWeatherMap API
+- NewsAPI
+- python-dotenv
+- requests
 
-# Future Improvements
+## Environment Variables
 
-Possible upgrades:
-- AI weather prediction
-- Satellite map integration
-- Live radar
-- Voice assistant
-- Multi-city comparison
-- Air Quality Index (AQI)
-- UV Index Monitoring
+Create a `.env` file in the project root:
 
----
+```env
+WEATHER_API_KEY=your_openweathermap_api_key
+NEWS_API_KEY=your_newsapi_key
+SECRET_KEY=your_flask_secret_key
+DEBUG=True
+```
 
-# Final Goal
+The app also supports these OpenWeatherMap key names:
 
-Build a visually attractive and interactive weather forecasting dashboard that combines:
+```env
+OPENWEATHER_API_KEY=your_openweathermap_api_key
+OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
+```
 
-- Real-time weather
-- Dynamic UI themes
-- Hourly forecasting
-- Weather alerts
-- News integration
-- Animated interface
+## Installation
 
-The project should look modern, responsive, and professional while demonstrating:
-- API integration
-- Frontend interactivity
-- Backend development
-- Real-world data handling
-- Dynamic UI rendering
+Install dependencies:
 
----
+```bash
+pip install -r requirements.txt
+```
 
-# Skills Demonstrated Through This Project
+Run the app:
 
-- Flask Development
-- REST API Integration
-- Dynamic Theme Handling
-- JavaScript Interactivity
-- Weather Data Processing
-- Frontend UI/UX Design
-- Real-Time Data Visualization
+```bash
+python app.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:5000
+```
+
+## Notes
+
+- Forecast data uses OpenWeatherMap forecast intervals, which are typically 3-hour forecast points.
+- Weather alerts are generated from forecast conditions inside the app.
+- SQLite files and utility folders exist in the structure, but database-backed features are not currently active.
