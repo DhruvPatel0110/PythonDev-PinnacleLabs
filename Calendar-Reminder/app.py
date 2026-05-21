@@ -29,6 +29,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
 # Initialize extensions
 db = SQLAlchemy(app)
@@ -256,6 +257,7 @@ def check_and_trigger_reminders():
 
 # Email notification function
 def send_email_notification(reminder):
+    print("[EMAIL FUNCTION CALLED]")
     try:
         subject = "Reminder Notification"
         reminder_time = reminder.reminder_time.strftime('%H:%M') if reminder.reminder_time else 'N/A'
@@ -266,6 +268,7 @@ def send_email_notification(reminder):
     """
         msg = Message(subject=subject, recipients=[reminder.email], body=body)
         mail.send(msg)
+        print("[EMAIL SENT SUCCESSFULLY]")
         print(f"[EMAIL SENT] To: {reminder.email} | Title: {reminder.title} | Date: {reminder.reminder_date} | Time: {reminder_time}")
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
