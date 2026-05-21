@@ -53,7 +53,23 @@ function editReminder(id) {
                 const editModal = new bootstrap.Modal(
                     document.getElementById('reminderModal')
                 );
-                editModal.show();
+                const historyModalEl = document.getElementById('historyModal');
+
+                const historyModal = bootstrap.Modal.getInstance(historyModalEl);
+
+                if (historyModal) {
+                    historyModal.hide();
+                }
+
+                setTimeout(() => {
+
+                    const reminderModal = new bootstrap.Modal(
+                        document.getElementById('reminderModal')
+                    );
+
+                    reminderModal.show();
+
+                }, 300);
             } else {
                 alert('Error fetching reminder details: ' + data.error);
             }

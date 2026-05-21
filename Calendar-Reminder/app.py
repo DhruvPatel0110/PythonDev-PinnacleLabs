@@ -172,9 +172,18 @@ def edit_reminder(id):
         data = request.get_json()
 
         reminder.title = data.get('title')
-        reminder.reminder_date = data.get('reminder_date')
-        reminder.reminder_time = data.get('reminder_time')
         reminder.email = data.get('email')
+        if data.get('reminder_time'):
+
+            reminder.reminder_time = datetime.strptime(
+                data.get('reminder_time'),
+                '%H:%M'
+            ).time()
+            
+        reminder.reminder_date = datetime.strptime(
+            data.get('reminder_date'),
+            '%Y-%m-%d'
+        ).date()
 
         db.session.commit()
 
