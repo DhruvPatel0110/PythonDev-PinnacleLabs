@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ app_name }}</title>
+    <meta http-equiv="refresh" content="0; url={{ url_for('dashboard') }}">
+  </head>
+  <body>
+    <main>
+      <p>Opening the weather news dashboard...</p>
+      <a href="{{ url_for('dashboard') }}">Open dashboard</a>
+    </main>
+  </body>
+</html>

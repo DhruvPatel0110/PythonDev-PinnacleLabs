@@ -1,0 +1,283 @@
+:root {
+  --theme-accent: #fde68a;
+  --theme-focus: rgba(253, 230, 138, 0.3);
+  --theme-button: linear-gradient(135deg, #fef3c7, #f59e0b);
+  --theme-button-text: #082f49;
+}
+
+.theme-sunny {
+  --theme-accent: #fde047;
+  --theme-focus: rgba(253, 224, 71, 0.32);
+  --theme-button: linear-gradient(135deg, #fef08a, #fb923c);
+  --theme-button-text: #082f49;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(186, 230, 253, 0.75), transparent 25%),
+    radial-gradient(circle at 82% 18%, rgba(253, 224, 71, 0.72), transparent 24%),
+    linear-gradient(135deg, #38bdf8, #facc15, #fb923c);
+}
+
+.theme-cloudy {
+  --theme-accent: #bae6fd;
+  --theme-focus: rgba(186, 230, 253, 0.3);
+  --theme-button: linear-gradient(135deg, #e0f2fe, #94a3b8);
+  --theme-button-text: #0f172a;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.72), transparent 22%),
+    radial-gradient(circle at 78% 15%, rgba(186, 230, 253, 0.5), transparent 26%),
+    linear-gradient(135deg, #64748b, #bae6fd, #f8fafc);
+}
+
+.theme-rain {
+  --theme-accent: #67e8f9;
+  --theme-focus: rgba(103, 232, 249, 0.28);
+  --theme-button: linear-gradient(135deg, #67e8f9, #0e7490);
+  --theme-button-text: #082f49;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(103, 232, 249, 0.35), transparent 24%),
+    radial-gradient(circle at 80% 78%, rgba(148, 163, 184, 0.34), transparent 26%),
+    linear-gradient(135deg, #0f172a, #075985, #64748b);
+}
+
+.theme-thunderstorm {
+  --theme-accent: #60a5fa;
+  --theme-focus: rgba(96, 165, 250, 0.32);
+  --theme-button: linear-gradient(135deg, #60a5fa, #1e3a8a);
+  --theme-button-text: #ffffff;
+  background:
+    radial-gradient(circle at 78% 22%, rgba(59, 130, 246, 0.42), transparent 22%),
+    linear-gradient(135deg, #020617, #1f2937, #0f172a);
+}
+
+.theme-snow {
+  --theme-accent: #bfdbfe;
+  --theme-focus: rgba(191, 219, 254, 0.34);
+  --theme-button: linear-gradient(135deg, #eff6ff, #93c5fd);
+  --theme-button-text: #0f172a;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.82), transparent 24%),
+    radial-gradient(circle at 78% 78%, rgba(191, 219, 254, 0.6), transparent 24%),
+    linear-gradient(135deg, #f8fafc, #cbd5e1, #7dd3fc);
+}
+
+.theme-snow,
+.theme-cloudy {
+  color: #0f172a;
+}
+
+.weather-animation-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.sun-glow,
+.cloud,
+.rain-field,
+.snow-field,
+.lightning-flash {
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.sun-glow {
+  position: absolute;
+  top: 9%;
+  right: 10%;
+  width: 190px;
+  height: 190px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.78), rgba(251, 146, 60, 0.18), transparent 68%);
+  animation: sunPulse 7s ease-in-out infinite;
+}
+
+.cloud {
+  position: absolute;
+  width: 220px;
+  height: 76px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  filter: blur(1px);
+  animation: cloudDrift 20s linear infinite;
+}
+
+.cloud::before,
+.cloud::after {
+  position: absolute;
+  content: "";
+  border-radius: 999px;
+  background: inherit;
+}
+
+.cloud::before {
+  left: 38px;
+  top: -36px;
+  width: 92px;
+  height: 92px;
+}
+
+.cloud::after {
+  right: 34px;
+  top: -22px;
+  width: 72px;
+  height: 72px;
+}
+
+.cloud-one {
+  top: 18%;
+  left: -230px;
+}
+
+.cloud-two {
+  top: 58%;
+  left: -260px;
+  animation-duration: 28s;
+  animation-delay: -9s;
+}
+
+.rain-field span,
+.snow-field span {
+  position: absolute;
+  top: -12%;
+  display: block;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.rain-field span {
+  width: 2px;
+  height: 48px;
+  border-radius: 999px;
+  background: rgba(125, 211, 252, 0.46);
+  animation-name: rainFall;
+}
+
+.snow-field span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  animation-name: snowFall;
+}
+
+.rain-field span:nth-child(1),
+.snow-field span:nth-child(1) {
+  left: 12%;
+  animation-duration: 1.8s;
+}
+
+.rain-field span:nth-child(2),
+.snow-field span:nth-child(2) {
+  left: 28%;
+  animation-duration: 2.2s;
+  animation-delay: -0.6s;
+}
+
+.rain-field span:nth-child(3),
+.snow-field span:nth-child(3) {
+  left: 46%;
+  animation-duration: 1.6s;
+  animation-delay: -1s;
+}
+
+.rain-field span:nth-child(4),
+.snow-field span:nth-child(4) {
+  left: 62%;
+  animation-duration: 2.4s;
+  animation-delay: -0.4s;
+}
+
+.rain-field span:nth-child(5),
+.snow-field span:nth-child(5) {
+  left: 78%;
+  animation-duration: 1.9s;
+  animation-delay: -1.2s;
+}
+
+.rain-field span:nth-child(6),
+.snow-field span:nth-child(6) {
+  left: 90%;
+  animation-duration: 2.1s;
+  animation-delay: -0.8s;
+}
+
+.lightning-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(96, 165, 250, 0.22);
+  animation: lightning 7s ease-in-out infinite;
+}
+
+.theme-sunny .sun-glow,
+.theme-cloudy .cloud,
+.theme-rain .cloud,
+.theme-rain .rain-field,
+.theme-thunderstorm .cloud,
+.theme-thunderstorm .rain-field,
+.theme-thunderstorm .lightning-flash,
+.theme-snow .snow-field,
+.theme-snow .cloud {
+  opacity: 1;
+}
+
+@keyframes sunPulse {
+  0%,
+  100% {
+    transform: scale(0.96);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes cloudDrift {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(100vw + 320px));
+  }
+}
+
+@keyframes rainFall {
+  from {
+    transform: translateY(-10vh) rotate(12deg);
+  }
+
+  to {
+    transform: translateY(115vh) rotate(12deg);
+  }
+}
+
+@keyframes snowFall {
+  from {
+    transform: translate3d(0, -10vh, 0);
+  }
+
+  to {
+    transform: translate3d(42px, 115vh, 0);
+  }
+}
+
+@keyframes lightning {
+  0%,
+  88%,
+  100% {
+    opacity: 0;
+  }
+
+  90% {
+    opacity: 0.8;
+  }
+
+  92% {
+    opacity: 0;
+  }
+
+  94% {
+    opacity: 0.45;
+  }
+}

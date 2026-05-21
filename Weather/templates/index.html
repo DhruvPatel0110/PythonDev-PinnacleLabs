@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <title>{{ app_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <main class="weather-shell">
+      <section class="weather-card" aria-labelledby="page-title">
+        <form class="search-panel" id="weatherForm" autocomplete="off">
+          <label class="visually-hidden" for="cityInput">Enter city name</label>
+          <div class="input-group input-group-lg weather-input-group">
+            <span class="input-group-text" aria-hidden="true">City</span>
+            <input
+              class="form-control"
+              id="cityInput"
+              name="city"
+              type="text"
+              placeholder="Hyderabad, Mumbai, Delhi"
+              aria-describedby="cityHelp"
+              required
+            >
+          </div>
+          <div class="action-row">
+            <button class="btn btn-weather-primary btn-lg" type="submit">Get Weather</button>
+            <button class="btn btn-weather-secondary btn-lg" id="locationButton" type="button">Use My Location</button>
+          </div>
+        </form>
+
+        <div class="alert alert-danger weather-alert d-none" id="alertPanel" role="alert"></div>
+
+        <div class="headline-block">
+          <p class="eyebrow">Live Weather Intelligence</p>
+          <h1 id="page-title">Weather Forecast Dashboard</h1>
+          <p id="cityHelp" class="lead">
+            Search a city or use your current location to begin.
+          </p>
+        </div>
+
+        <div class="status-card" id="statusPanel" role="status" aria-live="polite">
+          Ready for your forecast.
+        </div>
+
+        <section class="weather-result d-none" id="weatherResult" aria-labelledby="weatherResultTitle">
+          <div class="card weather-data-card">
+            <div class="card-body">
+              <div class="weather-summary">
+                <div>
+                  <p class="result-label">Current Weather</p>
+                  <h2 id="weatherResultTitle">
+                    <span id="weatherCity">City</span>
+                  </h2>
+                  <p class="condition-text">
+                    <span id="weatherCondition">Condition</span>
+                    <span aria-hidden="true">/</span>
+                    <span id="weatherDescription">Description</span>
+                  </p>
+                </div>
+                <img class="weather-icon" id="weatherIcon" src="" alt="">
+              </div>
+
+              <div class="temperature-row">
+                <div class="temperature-display">
+                  <span id="weatherTemperature">0</span><span aria-label="degrees Celsius">°C</span>
+                </div>
+                <div class="feels-like">
+                  Feels like <strong><span id="weatherFeelsLike">0</span>°C</strong>
+                </div>
+              </div>
+
+              <div class="row g-3 weather-metrics">
+                <div class="col-12 col-sm-4">
+                  <div class="metric-card">
+                    <span class="metric-label">Humidity</span>
+                    <strong><span id="weatherHumidity">0</span>%</strong>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="metric-card">
+                    <span class="metric-label">Wind Speed</span>
+                    <strong><span id="weatherWindSpeed">0</span> m/s</strong>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="metric-card">
+                    <span class="metric-label">Pressure</span>
+                    <strong><span id="weatherPressure">0</span> hPa</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
