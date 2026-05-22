@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Register | TechCart{% endblock %}
+
+{% set selected_role = request.form.get('role', 'customer') %}
+
+{% block content %}
+<section class="auth-shell">
+  <div class="auth-panel register-panel">
+    <div class="auth-copy">
+      <span class="eyebrow">Account Setup</span>
+      <h1>Join the TechCart marketplace</h1>
+      <p>Create the right account for shopping, selling, or delivering computer hardware and tech accessories.</p>
+      <div class="trust-row">
+        <span>Customer</span>
+        <span>Seller</span>
+        <span>Delivery Agent</span>
+      </div>
+    </div>
+
+    <form class="auth-card register-card" method="post" action="{{ url_for('auth.register') }}" novalidate>
+      <div class="auth-card-header">
+        <h2>Create Account</h2>
+        <a href="{{ url_for('auth.login') }}">Already registered?</a>
+      </div>
+
+      <div class="role-selector" aria-label="Choose account role">
+        <input type="radio" id="role_customer" name="role" value="customer" {% if selected_role == 'customer' %}checked{% endif %}>
+        <label for="role_customer">Customer</label>
+
+        <input type="radio" id="role_seller" name="role" value="seller" {% if selected_role == 'seller' %}checked{% endif %}>
+        <label for="role_seller">Seller</label>
+
+        <input type="radio" id="role_delivery" name="role" value="delivery_agent" {% if selected_role == 'delivery_agent' %}checked{% endif %}>
+        <label for="role_delivery">Delivery Agent</label>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="full_name">Full name</label>
+          <input class="form-control" id="full_name" name="full_name" type="text" value="{{ request.form.get('full_name', '') }}" autocomplete="name" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="email">Email address</label>
+          <input class="form-control" id="email" name="email" type="email" value="{{ request.form.get('email', '') }}" autocomplete="email" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="phone_number">Phone number</label>
+          <input class="form-control" id="phone_number" name="phone_number" type="tel" value="{{ request.form.get('phone_number', '') }}" autocomplete="tel" required>
+        </div>
+        <div class="col-md-6 role-fields seller-fields" data-role-fields="seller">
+          <label class="form-label" for="store_name">Store name</label>
+          <input class="form-control" id="store_name" name="store_name" type="text" value="{{ request.form.get('store_name', '') }}" data-role-required="seller">
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="address">Address</label>
+          <textarea class="form-control" id="address" name="address" rows="3" autocomplete="street-address" required>{{ request.form.get('address', '') }}</textarea>
+        </div>
+      </div>
+
+      <div class="role-fields delivery-fields" data-role-fields="delivery_agent">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label" for="vehicle_type">Vehicle type</label>
+            <input class="form-control" id="vehicle_type" name="vehicle_type" type="text" value="{{ request.form.get('vehicle_type', '') }}" data-role-required="delivery_agent">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="vehicle_number">Vehicle number</label>
+            <input class="form-control text-uppercase" id="vehicle_number" name="vehicle_number" type="text" value="{{ request.form.get('vehicle_number', '') }}" data-role-required="delivery_agent">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label" for="driving_license_number">Driving license number</label>
+            <input class="form-control text-uppercase" id="driving_license_number" name="driving_license_number" type="text" value="{{ request.form.get('driving_license_number', '') }}" data-role-required="delivery_agent">
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="password">Password</label>
+          <div class="password-field">
+            <input class="form-control" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-toggle" type="button" data-toggle-password="password" aria-label="Show password">Show</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="confirm_password">Confirm password</label>
+          <div class="password-field">
+            <input class="form-control" id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-toggle" type="button" data-toggle-password="confirm_password" aria-label="Show password">Show</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary auth-submit" type="submit">Create Account</button>
+    </form>
+  </div>
+</section>
+{% endblock %}
