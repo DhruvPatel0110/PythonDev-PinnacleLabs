@@ -31,6 +31,13 @@
             <li class="nav-item">
               <span class="nav-role">{{ current_user.role_label }}</span>
             </li>
+            {% if current_user.is_authenticated and current_user.role == 'seller' %}
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('add_product') }}">
+                      Add Product
+                  </a>
+              </li>
+            {% endif %}
             <li class="nav-item">
               <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">Logout</a>
             </li>

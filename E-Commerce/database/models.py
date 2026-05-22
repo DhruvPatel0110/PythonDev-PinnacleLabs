@@ -30,6 +30,11 @@ class User(UserMixin, db.Model):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
+    products = db.relationship(
+        'Product',
+        backref='seller',
+        lazy=True
+    )
 
     vehicle_type = db.Column(db.String(60))
     vehicle_number = db.Column(db.String(40))
@@ -63,6 +68,26 @@ class User(UserMixin, db.Model):
             "delivery_agent": "auth.delivery_dashboard",
         }
         return endpoints.get(self.role, "auth.login")
+    
+class Product(db.Model):
+
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
+    product_name = db.Column(db.String(200),nullable=False)
+    category = db.Column(db.String(100),nullable=False)
+    specifications = db.Column(db.Text,nullable=False)
+    price = db.Column(db.Float,nullable=False)
+    discount = db.Column(db.Float,default=0)
+    return_policy = db.Column(db.Text)
+    shipping_policy = db.Column(db.Text)
+    rating = db.Column(db.Float,default=0)
+    review_count = db.Column(db.Integer,default=0)
+    created_at = db.Column(db.DateTime,default=datetime.utcnow)
+    def __repr__(self):
+        return f'<Product {self.product_name}>'
 
 
 @login_manager.user_loader

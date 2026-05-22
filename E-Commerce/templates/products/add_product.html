@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <div class="card bg-dark text-light shadow-lg border-0 p-4">
+
+        <h1 class="mb-4">Add Product</h1>
+
+        <form method="POST">
+
+            <!-- Product Name -->
+            <div class="mb-4">
+                <label class="form-label">Product Name</label>
+                <input type="text"
+                       class="form-control"
+                       name="product_name"
+                       placeholder="Example: Logitech G Pro X Wireless Gaming Headset"
+                       required>
+            </div>
+
+            <!-- Product Category -->
+            <div class="mb-4">
+                <label class="form-label">Category</label>
+
+                <select class="form-select" name="category" required>
+                    <option value="">Select Category</option>
+                    <option>Keyboard</option>
+                    <option>Mouse</option>
+                    <option>Headphones</option>
+                    <option>Monitor</option>
+                    <option>Laptop</option>
+                    <option>Accessories</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <!-- Product Specs -->
+            <div class="mb-4">
+                <label class="form-label">Product Specifications</label>
+
+                <textarea class="form-control"
+                          rows="6"
+                          name="specifications"
+                          placeholder="Include all technical specifications, size, color, connectivity, battery, RGB support, sound quality, etc."
+                          required></textarea>
+            </div>
+
+            <!-- Price -->
+            <div class="row">
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Price (₹)</label>
+
+                    <input type="number"
+                           class="form-control"
+                           name="price"
+                           required>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Discount (%)</label>
+
+                    <input type="number"
+                           class="form-control"
+                           name="discount"
+                           placeholder="Optional">
+                </div>
+
+            </div>
+
+            <!-- Return Policy -->
+            <div class="mb-4">
+
+                <label class="form-label">Return / Exchange Policy</label>
+
+                <textarea class="form-control"
+                          rows="3"
+                          name="return_policy">Returns and exchanges are accepted within 7 days of delivery only if a valid unboxing video is provided as proof.</textarea>
+
+            </div>
+
+            <!-- Shipping Policy -->
+            <div class="mb-4">
+
+                <label class="form-label">Shipping Policy</label>
+
+                <textarea class="form-control"
+                          rows="3"
+                          name="shipping_policy">Standard shipping usually takes 3-7 business days depending on the delivery location and pincode.</textarea>
+
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary w-100 py-2">
+                Upload Product
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
