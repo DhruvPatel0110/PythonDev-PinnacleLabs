@@ -21,9 +21,11 @@
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            {% if not current_user.is_authenticated or current_user.role != 'seller' %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
             </li>
+            {% endif %}
             {% if current_user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for(current_user.dashboard_endpoint) }}">Dashboard</a>
