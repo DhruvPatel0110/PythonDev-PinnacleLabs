@@ -29,7 +29,7 @@ login_manager.login_message_category = "warning"
 
 
 class User(UserMixin, db.Model):
-    """Application user with role-specific seller and delivery metadata."""
+    """Application user with role-specific seller metadata."""
 
     __tablename__ = "users"
 
@@ -51,11 +51,6 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
-    vehicle_type = db.Column(db.String(60))
-    vehicle_number = db.Column(db.String(40))
-    driving_license_number = db.Column(db.String(80))
-    verification_status = db.Column(db.String(30))
-
     store_name = db.Column(db.String(120))
     seller_rating = db.Column(db.Float, nullable=False, default=0.0)
     total_products = db.Column(db.Integer, nullable=False, default=0)
@@ -71,7 +66,6 @@ class User(UserMixin, db.Model):
         labels = {
             "customer": "Customer",
             "seller": "Seller",
-            "delivery_agent": "Delivery Agent",
         }
         return labels.get(self.role, "User")
 
@@ -80,7 +74,6 @@ class User(UserMixin, db.Model):
         endpoints = {
             "customer": "main.index",
             "seller": "auth.seller_dashboard",
-            "delivery_agent": "auth.delivery_dashboard",
         }
         return endpoints.get(self.role, "auth.login")
     

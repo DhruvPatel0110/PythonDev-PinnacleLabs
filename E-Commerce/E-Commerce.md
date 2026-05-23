@@ -18,17 +18,15 @@ This project is a Python-based E-Commerce Shopping Cart platform focused entirel
 - Laptop Accessories
 - Tech Gadgets
 
-The platform supports three different user roles:
+The platform supports two user roles:
 
 1. Customer
 2. Seller
-3. Delivery Agent
 
 The system allows:
 - Product management
 - Purchasing
-- Delivery tracking
-- Invoice generation
+- Cart and wishlist
 - Role-based dashboards
 
 ---

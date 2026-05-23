@@ -4,7 +4,7 @@ import re
 from functools import wraps
 from pathlib import Path
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, render_template_string, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from database.models import Product, User, db
@@ -12,7 +12,7 @@ from database.models import Product, User, db
 auth_bp = Blueprint("auth", __name__)
 HELP_FILE = Path(__file__).resolve().parents[1] / "help.txt"
 
-VALID_ROLES = {"customer", "seller", "delivery_agent"}
+VALID_ROLES = {"customer", "seller"}
 EMAIL_PATTERN = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
 
@@ -24,9 +24,8 @@ def role_dashboard_url(role):
     endpoints = {
         "customer": "main.index",
         "seller": "auth.seller_dashboard",
-        "delivery_agent": "auth.delivery_dashboard",
     }
-    return url_for(endpoints[role])
+    return url_for(endpoints.get(role, "auth.login"))
 
 
 def validate_registration(form):
@@ -56,16 +55,6 @@ def validate_registration(form):
 
     if role == "seller" and not form.get("store_name", "").strip():
         errors.append("Store name is required for seller accounts.")
-
-    if role == "delivery_agent":
-        delivery_fields = {
-            "vehicle_type": "Vehicle type",
-            "vehicle_number": "Vehicle number",
-            "driving_license_number": "Driving license number",
-        }
-        for field_name, label in delivery_fields.items():
-            if not form.get(field_name, "").strip():
-                errors.append(f"{label} is required for delivery agent accounts.")
 
     duplicate_user = User.query.filter_by(email=email).first()
     if duplicate_user:
@@ -116,12 +105,6 @@ def register():
             user.seller_rating = 0.0
             user.total_products = 0
 
-        if role == "delivery_agent":
-            user.vehicle_type = request.form.get("vehicle_type", "").strip()
-            user.vehicle_number = request.form.get("vehicle_number", "").strip().upper()
-            user.driving_license_number = request.form.get("driving_license_number", "").strip().upper()
-            user.verification_status = "Pending"
-
         db.session.add(user)
         db.session.commit()
         login_user(user)
@@ -149,6 +132,10 @@ def login():
         if not user or not user.check_password(password):
             flash("Invalid email or password.", "danger")
             return render_template("auth/login.html"), 401
+
+        if user.role not in VALID_ROLES:
+            flash("This account type is no longer supported.", "danger")
+            return render_template("auth/login.html"), 403
 
         login_user(user, remember=remember)
         flash(f"Welcome back, {user.full_name}.", "success")
@@ -195,50 +182,4 @@ def seller_dashboard():
         "seller/dashboard.html",
         products=products,
         product_count=len(products),
-    )
-
-
-@auth_bp.route("/delivery/dashboard")
-@role_required("delivery_agent")
-def delivery_dashboard():
-    return render_dashboard(
-        heading="Delivery Dashboard",
-        accent=f"{current_user.vehicle_type} - {current_user.vehicle_number}",
-        stats=[
-            ("Verification", current_user.verification_status),
-            ("Vehicle", f"{current_user.vehicle_type} ({current_user.vehicle_number})"),
-            ("License", current_user.driving_license_number),
-        ],
-    )
-
-
-def render_dashboard(heading, accent, stats):
-    return render_template_string(
-        """
-        {% extends "base.html" %}
-        {% block title %}{{ heading }} | E-Commerce{% endblock %}
-        {% block content %}
-        <section class="auth-shell dashboard-shell">
-          <div class="auth-card dashboard-card">
-            <span class="eyebrow">Tech Products Marketplace</span>
-            <h1>{{ heading }}</h1>
-            <p class="auth-subtitle">{{ accent }}</p>
-            <div class="dashboard-grid">
-              {% for label, value in stats %}
-              <div class="dashboard-stat">
-                <span>{{ label }}</span>
-                <strong>{{ value }}</strong>
-              </div>
-              {% endfor %}
-            </div>
-            <div class="dashboard-actions">
-              <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">Logout</a>
-            </div>
-          </div>
-        </section>
-        {% endblock %}
-        """,
-        heading=heading,
-        accent=accent,
-        stats=stats,
     )

@@ -10,11 +10,10 @@
     <div class="auth-copy">
       <span class="eyebrow">Account Setup</span>
       <h1>Join the TechCart marketplace</h1>
-      <p>Create the right account for shopping, selling, or delivering computer hardware and tech accessories.</p>
+      <p>Create the right account for shopping or selling computer hardware and tech accessories.</p>
       <div class="trust-row">
         <span>Customer</span>
         <span>Seller</span>
-        <span>Delivery Agent</span>
       </div>
     </div>
 
@@ -33,9 +32,6 @@
 
         <input type="radio" id="role_seller" name="role" value="seller" {% if selected_role == 'seller' %}checked{% endif %}>
         <label for="role_seller">Seller</label>
-
-        <input type="radio" id="role_delivery" name="role" value="delivery_agent" {% if selected_role == 'delivery_agent' %}checked{% endif %}>
-        <label for="role_delivery">Delivery Agent</label>
       </div>
 
       <div class="row g-3">
@@ -58,23 +54,6 @@
         <div class="col-12">
           <label class="form-label" for="address">Address</label>
           <textarea class="form-control" id="address" name="address" rows="3" autocomplete="street-address" required>{{ request.form.get('address', '') }}</textarea>
-        </div>
-      </div>
-
-      <div class="role-fields delivery-fields" data-role-fields="delivery_agent">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label" for="vehicle_type">Vehicle type</label>
-            <input class="form-control" id="vehicle_type" name="vehicle_type" type="text" value="{{ request.form.get('vehicle_type', '') }}" data-role-required="delivery_agent">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label" for="vehicle_number">Vehicle number</label>
-            <input class="form-control text-uppercase" id="vehicle_number" name="vehicle_number" type="text" value="{{ request.form.get('vehicle_number', '') }}" data-role-required="delivery_agent">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label" for="driving_license_number">Driving license number</label>
-            <input class="form-control text-uppercase" id="driving_license_number" name="driving_license_number" type="text" value="{{ request.form.get('driving_license_number', '') }}" data-role-required="delivery_agent">
-          </div>
         </div>
       </div>
 
