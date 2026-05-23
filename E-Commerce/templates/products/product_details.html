@@ -18,6 +18,13 @@
 
     <div class="product-detail__layout">
       <div class="product-detail__gallery">
+        {% if product.image_filename %}
+        <img
+          class="product-detail__image"
+          src="{{ url_for('static', filename=product.image_path) }}"
+          alt="{{ product.product_name }}"
+        >
+        {% else %}
         <div class="product-detail__image-placeholder" aria-hidden="true">
           <svg viewBox="0 0 120 120" role="img">
             <rect x="14" y="24" width="92" height="68" rx="8"></rect>
@@ -25,6 +32,7 @@
             <path d="M20 82 L52 54 L72 66 L100 42"></path>
           </svg>
         </div>
+        {% endif %}
         {% if product.discount and product.discount > 0 %}
         <span class="product-detail__badge">{{ product.discount|int }}% OFF</span>
         {% endif %}
@@ -67,6 +75,14 @@
         <div class="product-detail__actions">
           <a class="btn btn-primary" href="{{ url_for('add_product') }}">+ Add Another Product</a>
           <a class="btn btn-outline-light" href="{{ url_for('auth.seller_dashboard') }}">Back to Dashboard</a>
+          <form
+            class="product-detail__delete-form"
+            method="POST"
+            action="{{ url_for('products.delete_product', product_id=product.id) }}"
+            onsubmit="return confirm('Are you sure you want to delete this product? This action cannot be undone.');"
+          >
+            <button type="submit" class="btn btn-danger">Delete Product</button>
+          </form>
         </div>
       </div>
     </div>

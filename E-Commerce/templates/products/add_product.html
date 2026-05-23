@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
+
 {% block content %}
 
 <div class="container mt-5 mb-5">
@@ -8,7 +12,7 @@
 
         <h1 class="mb-4">Add Product</h1>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data" id="addProductForm">
 
             <!-- Product Name -->
             <div class="mb-4">
@@ -34,6 +38,22 @@
                     <option>Accessories</option>
                     <option>Other</option>
                 </select>
+            </div>
+
+            <!-- Product Image -->
+            <div class="mb-4">
+                <label class="form-label" for="product_image">Product Image</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="product_image"
+                  name="product_image"
+                  accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                >
+                <small class="text-secondary">Optional. PNG, JPG, JPEG, GIF, or WEBP.</small>
+                <div class="product-upload-preview mt-3" id="imagePreview" hidden>
+                  <img id="imagePreviewImg" src="" alt="Product image preview">
+                </div>
             </div>
 
             <!-- Product Specs -->
@@ -103,4 +123,31 @@
 
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    const fileInput = document.getElementById('product_image');
+    const previewWrap = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('imagePreviewImg');
+
+    if (!fileInput || !previewWrap || !previewImg) {
+      return;
+    }
+
+    fileInput.addEventListener('change', function () {
+      const file = fileInput.files && fileInput.files[0];
+
+      if (!file) {
+        previewWrap.hidden = true;
+        previewImg.removeAttribute('src');
+        return;
+      }
+
+      previewImg.src = URL.createObjectURL(file);
+      previewWrap.hidden = false;
+    });
+  })();
+</script>
 {% endblock %}

@@ -85,7 +85,14 @@ class Product(db.Model):
     shipping_policy = db.Column(db.Text)
     rating = db.Column(db.Float,default=0)
     review_count = db.Column(db.Integer,default=0)
+    image_filename = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    @property
+    def image_path(self):
+        if self.image_filename:
+            return f"uploads/products/{self.image_filename}"
+        return None
 
     @property
     def discounted_price(self):

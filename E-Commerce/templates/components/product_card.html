@@ -1,6 +1,13 @@
 <article class="product-card">
   <a class="product-card__link" href="{{ url_for('products.seller_product_detail', product_id=product.id) }}">
     <div class="product-card__media">
+      {% if product.image_filename %}
+      <img
+        class="product-card__image"
+        src="{{ url_for('static', filename=product.image_path) }}"
+        alt="{{ product.product_name }}"
+      >
+      {% else %}
       <div class="product-card__image-placeholder" aria-hidden="true">
         <svg viewBox="0 0 64 64" role="img" aria-label="">
           <rect x="8" y="14" width="48" height="36" rx="4"></rect>
@@ -8,14 +15,15 @@
           <path d="M12 44 L28 30 L40 38 L52 26"></path>
         </svg>
       </div>
+      {% endif %}
       {% if product.discount and product.discount > 0 %}
       <span class="product-card__badge">{{ product.discount|int }}% OFF</span>
       {% endif %}
     </div>
 
     <div class="product-card__body">
-      <span class="product-card__category">{{ product.category }}</span>
       <h3 class="product-card__title">{{ product.product_name }}</h3>
+      <span class="product-card__category">{{ product.category }}</span>
 
       <div class="product-card__price-row">
         {% if product.discount and product.discount > 0 %}
@@ -25,19 +33,6 @@
         <span class="product-card__price">₹{{ '%.2f'|format(product.price) }}</span>
         {% endif %}
       </div>
-
-      <div class="product-card__rating" aria-label="Rating placeholder">
-        <span class="product-card__stars">★★★★★</span>
-        <span class="product-card__rating-text">
-          {% if product.review_count %}
-          {{ '%.1f'|format(product.rating) }} ({{ product.review_count }})
-          {% else %}
-          No ratings yet
-          {% endif %}
-        </span>
-      </div>
-
-      <p class="product-card__specs">{{ product.specs_preview }}</p>
     </div>
   </a>
 </article>

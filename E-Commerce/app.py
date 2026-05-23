@@ -1,10 +1,11 @@
-F"""Application entry point for the tech-products e-commerce platform."""
+"""Application entry point for the tech-products e-commerce platform."""
 
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 
 from config import Config
-from database.models import db, login_manager, User, Product
+from database.models import db, login_manager, Product
+from utils.helpers import allowed_image_file, save_product_image
 
 
 def create_app(config_overrides=None):
@@ -51,16 +52,25 @@ def create_app(config_overrides=None):
             discount = request.form.get('discount')
             return_policy = request.form.get('return_policy')
             shipping_policy = request.form.get('shipping_policy')
+            image_file = request.files.get('product_image')
 
-            print("\n========== NEW PRODUCT ==========")
-            print("Product Name:", product_name)
-            print("Category:", category)
-            print("Specifications:", specifications)
-            print("Price:", price)
-            print("Discount:", discount)
-            print("Return Policy:", return_policy)
-            print("Shipping Policy:", shipping_policy)
-            print("=================================\n")
+            image_filename = None
+            if image_file and image_file.filename:
+                if not allowed_image_file(image_file.filename):
+                    flash(
+                        'Invalid image type. Use PNG, JPG, JPEG, GIF, or WEBP.',
+                        'danger',
+                    )
+                    return render_template('products/add_product.html'), 400
+
+                image_filename = save_product_image(
+                    image_file,
+                    app.static_folder,
+                )
+                if not image_filename:
+                    flash('Could not save the product image. Please try again.', 'danger')
+                    return render_template('products/add_product.html'), 400
+
             new_product = Product(
                 product_name=product_name,
                 category=category,
@@ -69,7 +79,8 @@ def create_app(config_overrides=None):
                 discount=float(discount) if discount else 0.0,
                 return_policy=return_policy,
                 shipping_policy=shipping_policy,
-                seller_id=current_user.id
+                seller_id=current_user.id,
+                image_filename=image_filename,
             )
             db.session.add(new_product)
             db.session.commit()
