@@ -2,6 +2,81 @@
 
 {% block title %}Wishlist | E-Commerce{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+{% endblock %}
+
 {% block content %}
-<h1>Wishlist</h1>
+<section class="wishlist-page auth-shell dashboard-shell">
+  <div class="container wishlist-page__inner">
+
+    <header class="wishlist-page__header">
+      <span class="eyebrow">Saved Items</span>
+      <h1>My Wishlist</h1>
+      <p class="auth-subtitle">{{ wishlist_items|length }} saved product{% if wishlist_items|length != 1 %}s{% endif %}</p>
+    </header>
+
+    {% if wishlist_items %}
+    <div class="product-grid wishlist-grid">
+      {% for item in wishlist_items %}
+      {% set product = item.product %}
+      <article class="wishlist-card">
+        <a class="wishlist-card__media" href="{{ url_for('products.customer_product_detail', product_id=product.id) }}">
+          {% if product.image_filename %}
+          <img
+            src="{{ url_for('static', filename=product.image_path) }}"
+            alt="{{ product.product_name }}"
+          >
+          {% else %}
+          <div class="product-card__image-placeholder" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <rect x="8" y="14" width="48" height="36" rx="4"></rect>
+              <circle cx="24" cy="28" r="5"></circle>
+              <path d="M12 44 L28 30 L40 38 L52 26"></path>
+            </svg>
+          </div>
+          {% endif %}
+          {% if product.discount and product.discount > 0 %}
+          <span class="product-card__badge">{{ product.discount|int }}% OFF</span>
+          {% endif %}
+        </a>
+
+        <div class="wishlist-card__body">
+          <a class="wishlist-card__title" href="{{ url_for('products.customer_product_detail', product_id=product.id) }}">
+            {{ product.product_name }}
+          </a>
+          <p class="product-card__seller">{{ product.seller.store_name or product.seller.full_name }}</p>
+
+          <div class="product-card__price-row">
+            {% if product.discount and product.discount > 0 %}
+            <span class="product-card__price product-card__price--sale">₹{{ '%.2f'|format(product.discounted_price) }}</span>
+            <span class="product-card__price product-card__price--original">₹{{ '%.2f'|format(product.price) }}</span>
+            {% else %}
+            <span class="product-card__price">₹{{ '%.2f'|format(product.price) }}</span>
+            {% endif %}
+          </div>
+
+          <div class="wishlist-card__actions">
+            <form method="POST" action="{{ url_for('wishlist.move_to_cart', item_id=item.id) }}">
+              <button type="submit" class="btn btn-primary btn-sm w-100">Move to Cart</button>
+            </form>
+            <form method="POST" action="{{ url_for('wishlist.remove_from_wishlist', item_id=item.id) }}">
+              <button type="submit" class="btn btn-outline-light btn-sm w-100">Remove</button>
+            </form>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="product-empty-state">
+      <h3>Your wishlist is empty</h3>
+      <p>Save products you want to buy later.</p>
+      <a class="btn btn-primary" href="{{ url_for('main.index') }}">Browse Products</a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
 {% endblock %}

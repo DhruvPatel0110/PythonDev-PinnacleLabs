@@ -125,6 +125,57 @@ class Product(db.Model):
         return f'<Product {self.product_name}>'
 
 
+class CartItem(db.Model):
+    __tablename__ = "cart_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False, index=True)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    user = db.relationship("User", backref=db.backref("cart_items", lazy=True))
+    product = db.relationship("Product", backref=db.backref("cart_entries", lazy=True))
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "product_id", name="uq_cart_user_product"),
+    )
+
+    @property
+    def unit_price(self):
+        if not self.product:
+            return 0.0
+        return self.product.discounted_price
+
+    @property
+    def subtotal(self):
+        return round(self.unit_price * self.quantity, 2)
+
+
+class WishlistItem(db.Model):
+    __tablename__ = "wishlist_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False, index=True)
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+
+    user = db.relationship("User", backref=db.backref("wishlist_items", lazy=True))
+    product = db.relationship("Product", backref=db.backref("wishlist_entries", lazy=True))
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "product_id", name="uq_wishlist_user_product"),
+    )
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))

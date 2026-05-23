@@ -404,6 +404,10 @@
   gap: 0.75rem;
 }
 
+.product-detail__actions--customer .btn-primary {
+  letter-spacing: 0.02em;
+}
+
 .product-detail__delete-form {
   margin: 0;
 }

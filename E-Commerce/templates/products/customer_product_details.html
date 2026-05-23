@@ -76,8 +76,28 @@
           {% endif %}
         </p>
 
-        <div class="product-detail__actions">
-          <a class="btn btn-outline-light" href="{{ url_for('main.index') }}">Back to Home</a>
+        <div class="product-detail__actions product-detail__actions--customer">
+          <form
+            method="POST"
+            action="{{ url_for('cart.add_to_cart', product_id=product.id) }}"
+            class="product-detail__action-form"
+          >
+            <input type="hidden" name="next" value="{{ request.url }}">
+            <button type="submit" class="btn btn-primary btn-lg product-detail__btn-cart">
+              Add to Cart
+            </button>
+          </form>
+          <form
+            method="POST"
+            action="{{ url_for('wishlist.add_to_wishlist', product_id=product.id) }}"
+            class="product-detail__action-form"
+          >
+            <input type="hidden" name="next" value="{{ request.url }}">
+            <button type="submit" class="btn btn-outline-light product-detail__btn-wishlist">
+              Add to Wishlist
+            </button>
+          </form>
+          <a class="btn btn-outline-light product-detail__btn-back" href="{{ url_for('main.index') }}">Back to Home</a>
         </div>
       </div>
     </div>

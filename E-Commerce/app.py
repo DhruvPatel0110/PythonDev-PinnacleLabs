@@ -19,14 +19,19 @@ def create_app(config_overrides=None):
 
     with app.app_context():
         migrate_schema()
+        db.create_all()
 
     from api.auth_routes import auth_bp
+    from api.cart_routes import cart_bp
     from api.product_routes import product_bp
     from api.routes import main_bp
+    from api.wishlist_routes import wishlist_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(product_bp)
+    app.register_blueprint(cart_bp)
+    app.register_blueprint(wishlist_bp)
 
     @login_manager.unauthorized_handler
     def unauthorized():
