@@ -4,7 +4,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 
 from config import Config
-from database.models import db, login_manager, Product
+from database.models import db, login_manager, Product, migrate_schema
 from utils.helpers import allowed_image_file, save_product_image
 
 
@@ -16,6 +16,9 @@ def create_app(config_overrides=None):
 
     db.init_app(app)
     login_manager.init_app(app)
+
+    with app.app_context():
+        migrate_schema()
 
     from api.auth_routes import auth_bp
     from api.product_routes import product_bp

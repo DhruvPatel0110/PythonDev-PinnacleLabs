@@ -4,9 +4,24 @@ from datetime import datetime, timezone
 
 from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect, text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 db = SQLAlchemy()
+
+
+def migrate_schema():
+    """Add new columns to existing tables without dropping data."""
+    inspector = inspect(db.engine)
+    if "products" not in inspector.get_table_names():
+        return
+
+    column_names = {column["name"] for column in inspector.get_columns("products")}
+    if "image_filename" not in column_names:
+        with db.engine.begin() as connection:
+            connection.execute(
+                text("ALTER TABLE products ADD COLUMN image_filename VARCHAR(255)")
+            )
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access that page."
