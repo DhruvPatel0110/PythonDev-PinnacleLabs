@@ -51,4 +51,32 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmPassword?.addEventListener("input", validatePasswords);
     registerForm.addEventListener("submit", validatePasswords);
   }
+
+  const helpButtons = Array.from(document.querySelectorAll("[data-help-button]"));
+  const helpModalElement = document.getElementById("helpModal");
+  const helpContent = document.getElementById("helpContent");
+
+  if (helpButtons.length && helpModalElement && helpContent) {
+    const helpModal = new bootstrap.Modal(helpModalElement);
+
+    // Fetch help.txt through Flask so missing documentation can be handled cleanly.
+    const loadHelpGuide = async () => {
+      helpContent.textContent = "Loading help guide...";
+
+      try {
+        const response = await fetch(window.TechCartHelpUrl || "/help");
+        const payload = await response.json();
+        helpContent.textContent = payload.content || "Help documentation not found.";
+      } catch (error) {
+        helpContent.textContent = "Help documentation not found.";
+      }
+    };
+
+    helpButtons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        helpModal.show();
+        await loadHelpGuide();
+      });
+    });
+  }
 });

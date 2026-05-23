@@ -17,10 +17,12 @@ def create_app(config_overrides=None):
     login_manager.init_app(app)
 
     from api.auth_routes import auth_bp
+    from api.product_routes import product_bp
     from api.routes import main_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(product_bp)
 
     @login_manager.unauthorized_handler
     def unauthorized():
@@ -71,8 +73,12 @@ def create_app(config_overrides=None):
             )
             db.session.add(new_product)
             db.session.commit()
+            current_user.total_products = Product.query.filter_by(
+                seller_id=current_user.id
+            ).count()
+            db.session.commit()
             flash('Product uploaded successfully!', 'success')
-            
+            return redirect(url_for('auth.seller_dashboard'))
 
         return render_template('products/add_product.html')
 

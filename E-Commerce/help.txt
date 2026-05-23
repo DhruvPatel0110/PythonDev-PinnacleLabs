@@ -1,0 +1,37 @@
+=================================
+CUSTOMER
+=================================
+- Register as Customer.
+- Log in with your email and password.
+- Browse tech products such as CPUs, GPUs, RAM, storage, monitors, and accessories.
+- Add products to your cart.
+- Place orders and track delivery updates from your dashboard.
+- Log out when you finish using your account.
+
+=================================
+SELLER
+=================================
+- Register as Seller.
+- Enter your store name during registration.
+- Log in to open your seller dashboard.
+- Add tech products and manage inventory.
+- View orders from customers.
+- Update product listings, stock, pricing, and discounts.
+
+=================================
+DELIVERY AGENT
+=================================
+- Register as Delivery Agent.
+- Add your vehicle type, vehicle number, and driving license number.
+- Log in to open your delivery dashboard.
+- View assigned deliveries.
+- Update delivery status as orders move forward.
+- Track completed deliveries from your account.
+
+=================================
+LOGIN HELP
+=================================
+- Use the same email and password you used during registration.
+- Choose Remember me if you want to stay signed in on this device.
+- Use the Show button to check your password while typing.
+- If login fails, check your email spelling and password.

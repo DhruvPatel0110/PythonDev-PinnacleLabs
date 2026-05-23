@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Dashboard | E-Commerce{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-shell dashboard-shell seller-dashboard-shell">
+  <div class="seller-dashboard container-fluid px-3 px-lg-4">
+
+    <header class="seller-dashboard__header">
+      <div>
+        <span class="eyebrow">Tech Products Marketplace</span>
+        <h1>Seller Dashboard</h1>
+        <p class="auth-subtitle">{{ current_user.store_name or 'Your store' }}</p>
+      </div>
+      <a class="btn btn-primary seller-dashboard__add-btn" href="{{ url_for('add_product') }}">
+        + Add Product
+      </a>
+    </header>
+
+    <div class="dashboard-grid seller-dashboard__stats">
+      <div class="dashboard-stat">
+        <span>Store Name</span>
+        <strong>{{ current_user.store_name or '—' }}</strong>
+      </div>
+      <div class="dashboard-stat">
+        <span>Seller Rating</span>
+        <strong>{{ '%.1f'|format(current_user.seller_rating) }} / 5</strong>
+      </div>
+      <div class="dashboard-stat">
+        <span>Total Products</span>
+        <strong>{{ product_count }}</strong>
+      </div>
+    </div>
+
+    <section class="seller-products" aria-label="Your products">
+      <div class="seller-products__heading">
+        <h2>Your Products</h2>
+        <p class="seller-products__count">{{ product_count }} listed</p>
+      </div>
+
+      {% if products %}
+      <div class="product-grid">
+        {% for product in products %}
+          {% include "components/product_card.html" %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="product-empty-state">
+        <div class="product-empty-state__icon" aria-hidden="true">
+          <span></span>
+        </div>
+        <h3>No products uploaded yet</h3>
+        <p>Start building your catalog. Add your first tech product to appear here.</p>
+        <a class="btn btn-primary" href="{{ url_for('add_product') }}">+ Add Product</a>
+      </div>
+      {% endif %}
+    </section>
+
+    <div class="dashboard-actions">
+      <a class="btn btn-outline-light" href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -21,7 +21,10 @@
     <form class="auth-card register-card" method="post" action="{{ url_for('auth.register') }}" novalidate>
       <div class="auth-card-header">
         <h2>Create Account</h2>
-        <a href="{{ url_for('auth.login') }}">Already registered?</a>
+        <div class="auth-header-actions">
+          <button class="help-link" type="button" data-help-button>Help Me</button>
+          <a href="{{ url_for('auth.login') }}">Already registered?</a>
+        </div>
       </div>
 
       <div class="role-selector" aria-label="Choose account role">

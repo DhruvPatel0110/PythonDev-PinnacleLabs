@@ -2,13 +2,15 @@
 
 import re
 from functools import wraps
+from pathlib import Path
 
-from flask import Blueprint, flash, redirect, render_template, render_template_string, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, render_template_string, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
-from database.models import User, db
+from database.models import Product, User, db
 
 auth_bp = Blueprint("auth", __name__)
+HELP_FILE = Path(__file__).resolve().parents[1] / "help.txt"
 
 VALID_ROLES = {"customer", "seller", "delivery_agent"}
 EMAIL_PATTERN = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
@@ -163,6 +165,18 @@ def logout():
     return redirect(url_for("auth.login"))
 
 
+@auth_bp.route("/help")
+def help_content():
+    """Return beginner help documentation for the Bootstrap help modal."""
+    try:
+        content = HELP_FILE.read_text(encoding="utf-8").strip()
+    except OSError:
+        content = "Help documentation not found."
+        return jsonify({"content": content}), 404
+
+    return jsonify({"content": content})
+
+
 @auth_bp.route("/customer/dashboard")
 @role_required("customer")
 def customer_dashboard():
@@ -180,14 +194,15 @@ def customer_dashboard():
 @auth_bp.route("/seller/dashboard")
 @role_required("seller")
 def seller_dashboard():
-    return render_dashboard(
-        heading="Seller Dashboard",
-        accent=current_user.store_name,
-        stats=[
-            ("Store Name", current_user.store_name),
-            ("Seller Rating", f"{current_user.seller_rating:.1f} / 5"),
-            ("Total Products", current_user.total_products),
-        ],
+    products = (
+        Product.query.filter_by(seller_id=current_user.id)
+        .order_by(Product.created_at.desc())
+        .all()
+    )
+    return render_template(
+        "seller/dashboard.html",
+        products=products,
+        product_count=len(products),
     )
 
 

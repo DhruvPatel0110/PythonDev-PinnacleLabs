@@ -85,7 +85,20 @@ class Product(db.Model):
     shipping_policy = db.Column(db.Text)
     rating = db.Column(db.Float,default=0)
     review_count = db.Column(db.Integer,default=0)
-    created_at = db.Column(db.DateTime,default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    @property
+    def discounted_price(self):
+        discount_pct = self.discount or 0
+        return round(self.price * (1 - discount_pct / 100), 2)
+
+    @property
+    def specs_preview(self):
+        text = (self.specifications or "").strip()
+        if len(text) <= 120:
+            return text
+        return f"{text[:120].rstrip()}..."
+
     def __repr__(self):
         return f'<Product {self.product_name}>'
 

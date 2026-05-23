@@ -1,7 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}Product Details | E-Commerce{% endblock %}
+{% block title %}{{ product.product_name }} | E-Commerce{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
 
 {% block content %}
-<h1>Product Details</h1>
+<section class="product-detail-shell">
+  <div class="container product-detail">
+
+    <nav class="product-detail__breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ url_for('auth.seller_dashboard') }}">Seller Dashboard</a>
+      <span aria-hidden="true">/</span>
+      <span>{{ product.product_name }}</span>
+    </nav>
+
+    <div class="product-detail__layout">
+      <div class="product-detail__gallery">
+        <div class="product-detail__image-placeholder" aria-hidden="true">
+          <svg viewBox="0 0 120 120" role="img">
+            <rect x="14" y="24" width="92" height="68" rx="8"></rect>
+            <circle cx="44" cy="48" r="10"></circle>
+            <path d="M20 82 L52 54 L72 66 L100 42"></path>
+          </svg>
+        </div>
+        {% if product.discount and product.discount > 0 %}
+        <span class="product-detail__badge">{{ product.discount|int }}% OFF</span>
+        {% endif %}
+      </div>
+
+      <div class="product-detail__info">
+        <span class="product-detail__category">{{ product.category }}</span>
+        <h1>{{ product.product_name }}</h1>
+
+        <div class="product-detail__rating" aria-label="Rating placeholder">
+          <span class="product-detail__stars">★★★★★</span>
+          <span>
+            {% if product.review_count %}
+            {{ '%.1f'|format(product.rating) }} · {{ product.review_count }} reviews
+            {% else %}
+            No ratings yet — be the first to review
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="product-detail__price-block">
+          {% if product.discount and product.discount > 0 %}
+          <span class="product-detail__price product-detail__price--sale">₹{{ '%.2f'|format(product.discounted_price) }}</span>
+          <span class="product-detail__price product-detail__price--original">₹{{ '%.2f'|format(product.price) }}</span>
+          <span class="product-detail__save">You save {{ product.discount|int }}%</span>
+          {% else %}
+          <span class="product-detail__price">₹{{ '%.2f'|format(product.price) }}</span>
+          {% endif %}
+        </div>
+
+        <p class="product-detail__meta">
+          Listed on
+          {% if product.created_at %}
+          {{ product.created_at.strftime('%d %b %Y') }}
+          {% else %}
+          —
+          {% endif %}
+        </p>
+
+        <div class="product-detail__actions">
+          <a class="btn btn-primary" href="{{ url_for('add_product') }}">+ Add Another Product</a>
+          <a class="btn btn-outline-light" href="{{ url_for('auth.seller_dashboard') }}">Back to Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-detail__panels">
+      <article class="product-detail__panel">
+        <h2>Specifications</h2>
+        <pre class="product-detail__text">{{ product.specifications }}</pre>
+      </article>
+
+      <article class="product-detail__panel">
+        <h2>Return Policy</h2>
+        <p class="product-detail__text">{{ product.return_policy or 'No return policy provided.' }}</p>
+      </article>
+
+      <article class="product-detail__panel">
+        <h2>Shipping Policy</h2>
+        <p class="product-detail__text">{{ product.shipping_policy or 'No shipping policy provided.' }}</p>
+      </article>
+
+      <article class="product-detail__panel product-detail__panel--seller">
+        <h2>Seller Information</h2>
+        <ul class="product-detail__seller-list">
+          <li><span>Store</span><strong>{{ seller.store_name or seller.full_name }}</strong></li>
+          <li><span>Seller</span><strong>{{ seller.full_name }}</strong></li>
+          <li><span>Contact</span><strong>{{ seller.phone_number }}</strong></li>
+          <li><span>Rating</span><strong>{{ '%.1f'|format(seller.seller_rating) }} / 5</strong></li>
+          <li><span>Address</span><strong>{{ seller.address }}</strong></li>
+        </ul>
+      </article>
+    </div>
+
+  </div>
+</section>
 {% endblock %}
