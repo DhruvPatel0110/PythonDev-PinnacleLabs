@@ -107,6 +107,8 @@
     <script>
       window.TechCartHelpUrl = "{{ url_for('auth.help_content') }}";
     </script>
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     {% block extra_js %}{% endblock %}
   </body>

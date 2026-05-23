@@ -1,6 +1,6 @@
 """Shopping cart routes for customers."""
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.orm import joinedload
 
@@ -8,6 +8,10 @@ from api.auth_routes import role_required
 from database.models import CartItem, Product, db
 
 cart_bp = Blueprint("cart", __name__)
+
+
+def _is_ajax_request():
+    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
 
 def _cart_items_query():
@@ -37,7 +41,10 @@ def view_cart():
 def add_to_cart(product_id):
     product = db.session.get(Product, product_id)
     if not product:
-        flash("Product not found.", "danger")
+        message = "Product not found."
+        if _is_ajax_request():
+            return jsonify(success=False, message=message, category="danger"), 404
+        flash(message, "danger")
         return redirect(url_for("main.index"))
 
     item = CartItem.query.filter_by(
@@ -47,7 +54,6 @@ def add_to_cart(product_id):
 
     if item:
         item.quantity += 1
-        flash(f'"{product.product_name}" quantity updated in your cart.', "success")
     else:
         db.session.add(
             CartItem(
@@ -56,10 +62,16 @@ def add_to_cart(product_id):
                 quantity=1,
             )
         )
-        flash(f'"{product.product_name}" added to your cart.', "success")
 
     db.session.commit()
-    return redirect(request.form.get("next") or request.referrer or url_for("cart.view_cart"))
+    message = "Item added to cart"
+    if _is_ajax_request():
+        return jsonify(success=True, message=message, category="success")
+
+    flash(message, "success")
+    return redirect(
+        url_for("products.customer_product_detail", product_id=product_id)
+    )
 
 
 @cart_bp.route("/cart/remove/<int:item_id>", methods=["POST"])

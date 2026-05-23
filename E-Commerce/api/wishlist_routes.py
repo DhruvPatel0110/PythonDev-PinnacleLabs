@@ -1,6 +1,6 @@
 """Wishlist routes for customers."""
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.orm import joinedload
 
@@ -8,6 +8,10 @@ from api.auth_routes import role_required
 from database.models import CartItem, Product, WishlistItem, db
 
 wishlist_bp = Blueprint("wishlist", __name__)
+
+
+def _is_ajax_request():
+    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
 
 def _wishlist_items_query():
@@ -35,7 +39,10 @@ def view_wishlist():
 def add_to_wishlist(product_id):
     product = db.session.get(Product, product_id)
     if not product:
-        flash("Product not found.", "danger")
+        message = "Product not found."
+        if _is_ajax_request():
+            return jsonify(success=False, message=message, category="danger"), 404
+        flash(message, "danger")
         return redirect(url_for("main.index"))
 
     existing = WishlistItem.query.filter_by(
@@ -44,7 +51,8 @@ def add_to_wishlist(product_id):
     ).first()
 
     if existing:
-        flash(f'"{product.product_name}" is already in your wishlist.', "info")
+        message = "Item already in wishlist"
+        category = "info"
     else:
         db.session.add(
             WishlistItem(
@@ -53,9 +61,16 @@ def add_to_wishlist(product_id):
             )
         )
         db.session.commit()
-        flash(f'"{product.product_name}" added to your wishlist.', "success")
+        message = "Item added to wishlist"
+        category = "success"
 
-    return redirect(request.form.get("next") or request.referrer or url_for("wishlist.view_wishlist"))
+    if _is_ajax_request():
+        return jsonify(success=category == "success", message=message, category=category)
+
+    flash(message, category)
+    return redirect(
+        url_for("products.customer_product_detail", product_id=product_id)
+    )
 
 
 @wishlist_bp.route("/wishlist/remove/<int:item_id>", methods=["POST"])

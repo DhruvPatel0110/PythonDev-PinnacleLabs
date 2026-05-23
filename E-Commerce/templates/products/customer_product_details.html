@@ -80,9 +80,8 @@
           <form
             method="POST"
             action="{{ url_for('cart.add_to_cart', product_id=product.id) }}"
-            class="product-detail__action-form"
+            class="product-detail__action-form js-ajax-add-form"
           >
-            <input type="hidden" name="next" value="{{ request.url }}">
             <button type="submit" class="btn btn-primary btn-lg product-detail__btn-cart">
               Add to Cart
             </button>
@@ -90,9 +89,8 @@
           <form
             method="POST"
             action="{{ url_for('wishlist.add_to_wishlist', product_id=product.id) }}"
-            class="product-detail__action-form"
+            class="product-detail__action-form js-ajax-add-form"
           >
-            <input type="hidden" name="next" value="{{ request.url }}">
             <button type="submit" class="btn btn-outline-light product-detail__btn-wishlist">
               Add to Wishlist
             </button>
@@ -130,4 +128,53 @@
 
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    const forms = document.querySelectorAll(".js-ajax-add-form");
+    if (!forms.length || typeof window.showToast !== "function") {
+      return;
+    }
+
+    forms.forEach(function (form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+        }
+
+        fetch(form.action, {
+          method: "POST",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+          credentials: "same-origin",
+        })
+          .then(function (response) {
+            return response.json().then(function (data) {
+              if (!response.ok) {
+                throw data;
+              }
+              return data;
+            });
+          })
+          .then(function (data) {
+            window.showToast(data.message, data.category || "success");
+          })
+          .catch(function (error) {
+            const message = (error && error.message) || "Something went wrong. Please try again.";
+            const category = (error && error.category) || "danger";
+            window.showToast(message, category);
+          })
+          .finally(function () {
+            if (submitButton) {
+              submitButton.disabled = false;
+            }
+          });
+      });
+    });
+  })();
+</script>
 {% endblock %}
