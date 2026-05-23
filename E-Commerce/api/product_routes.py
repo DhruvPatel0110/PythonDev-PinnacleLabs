@@ -1,13 +1,22 @@
-"""Product catalog routes for sellers."""
+"""Product catalog routes for sellers and customers."""
 
 from flask import Blueprint, current_app, flash, redirect, render_template, url_for
 from flask_login import current_user
+from sqlalchemy.orm import joinedload
 
 from api.auth_routes import role_required
 from database.models import Product, User, db
 from utils.helpers import delete_product_image
 
 product_bp = Blueprint("products", __name__)
+
+
+def get_marketplace_products():
+    return (
+        Product.query.options(joinedload(Product.seller))
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
 
 @product_bp.route("/seller/products/<int:product_id>")
@@ -45,3 +54,30 @@ def delete_product(product_id):
 
     flash("Product deleted successfully.", "success")
     return redirect(url_for("auth.seller_dashboard"))
+
+
+@product_bp.route("/products")
+@role_required("customer")
+def customer_products():
+    products = get_marketplace_products()
+    return render_template(
+        "products/customer_catalog.html",
+        products=products,
+        product_count=len(products),
+    )
+
+
+@product_bp.route("/product/<int:product_id>")
+@role_required("customer")
+def customer_product_detail(product_id):
+    product = (
+        Product.query.options(joinedload(Product.seller))
+        .filter_by(id=product_id)
+        .first_or_404()
+    )
+
+    return render_template(
+        "products/customer_product_details.html",
+        product=product,
+        seller=product.seller,
+    )

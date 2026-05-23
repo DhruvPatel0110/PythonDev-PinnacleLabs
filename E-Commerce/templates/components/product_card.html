@@ -1,5 +1,6 @@
+{% set product_detail_url = product_detail_url | default(url_for('products.seller_product_detail', product_id=product.id)) %}
 <article class="product-card">
-  <a class="product-card__link" href="{{ url_for('products.seller_product_detail', product_id=product.id) }}">
+  <a class="product-card__link" href="{{ product_detail_url }}">
     <div class="product-card__media">
       {% if product.image_filename %}
       <img
@@ -33,6 +34,14 @@
         <span class="product-card__price">₹{{ '%.2f'|format(product.price) }}</span>
         {% endif %}
       </div>
+
+      {% if show_seller_name | default(false) and product.seller %}
+      <p class="product-card__seller">{{ product.seller.store_name or product.seller.full_name }}</p>
+      {% endif %}
+
+      {% if show_specs_preview | default(false) %}
+      <p class="product-card__specs">{{ product.specs_preview }}</p>
+      {% endif %}
     </div>
   </a>
 </article>

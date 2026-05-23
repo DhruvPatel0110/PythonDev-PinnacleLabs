@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Tech Marketplace{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-shell dashboard-shell seller-dashboard-shell">
+  <div class="seller-dashboard container-fluid px-3 px-lg-4">
+
+    <header class="seller-dashboard__header">
+      <div>
+        <span class="eyebrow">Tech Products Marketplace</span>
+        <h1>Welcome, {{ current_user.full_name }}</h1>
+        <p class="auth-subtitle">Browse computer hardware, gaming gear, and tech accessories from all sellers.</p>
+      </div>
+    </header>
+
+    <section class="seller-products" aria-label="Marketplace products">
+      <div class="seller-products__heading">
+        <h2>All Products</h2>
+        <p class="seller-products__count">{{ product_count }} available</p>
+      </div>
+
+      {% if products %}
+      <div class="product-grid">
+        {% for product in products %}
+          {% with product_detail_url=url_for('products.customer_product_detail', product_id=product.id), show_seller_name=true, show_specs_preview=true %}
+            {% include "components/product_card.html" %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="product-empty-state">
+        <div class="product-empty-state__icon" aria-hidden="true">
+          <span></span>
+        </div>
+        <h3>No products available yet</h3>
+        <p>Check back soon — sellers are adding new tech products to the marketplace.</p>
+      </div>
+      {% endif %}
+    </section>
+
+  </div>
+</section>
+{% endblock %}

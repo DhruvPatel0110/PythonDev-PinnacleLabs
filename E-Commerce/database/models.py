@@ -78,7 +78,7 @@ class User(UserMixin, db.Model):
     @property
     def dashboard_endpoint(self):
         endpoints = {
-            "customer": "auth.customer_dashboard",
+            "customer": "main.index",
             "seller": "auth.seller_dashboard",
             "delivery_agent": "auth.delivery_dashboard",
         }

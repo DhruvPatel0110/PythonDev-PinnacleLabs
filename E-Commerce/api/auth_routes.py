@@ -22,7 +22,7 @@ def normalize_email(email):
 
 def role_dashboard_url(role):
     endpoints = {
-        "customer": "auth.customer_dashboard",
+        "customer": "main.index",
         "seller": "auth.seller_dashboard",
         "delivery_agent": "auth.delivery_dashboard",
     }
@@ -180,15 +180,7 @@ def help_content():
 @auth_bp.route("/customer/dashboard")
 @role_required("customer")
 def customer_dashboard():
-    return render_dashboard(
-        heading="Customer Dashboard",
-        accent="Shop computer hardware, gaming gear, and tech accessories.",
-        stats=[
-            ("Account Role", current_user.role_label),
-            ("Saved Address", current_user.address),
-            ("Contact", current_user.phone_number),
-        ],
-    )
+    return redirect(url_for("main.index"))
 
 
 @auth_bp.route("/seller/dashboard")
